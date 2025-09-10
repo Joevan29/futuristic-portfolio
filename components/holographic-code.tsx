@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { useInView } from "framer-motion"
+import { useRef } from "react"
 
 const codeSnippets = [
   {
@@ -38,92 +40,86 @@ const codeSnippets = [
 export function HolographicCode() {
   const [currentSnippet, setCurrentSnippet] = useState(0)
   const [displayedCode, setDisplayedCode] = useState("")
-  const [cursorVisible, setCursorVisible] = useState(true)
+  
+  // Ref untuk mendeteksi visibilitas komponen
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, amount: 0.5 }) // Animasi hanya berjalan sekali saat terlihat
 
   useEffect(() => {
+    // Hanya jalankan animasi jika komponen terlihat di layar
+    if (!isInView) return
+
     const snippet = codeSnippets[currentSnippet]
     let index = 0
+    let timeoutId: NodeJS.Timeout
 
     const typeCode = () => {
       if (index < snippet.code.length) {
         setDisplayedCode(snippet.code.slice(0, index + 1))
         index++
-        setTimeout(typeCode, 50 + Math.random() * 50)
+        timeoutId = setTimeout(typeCode, 25) // Interval dipercepat untuk mengurangi durasi
       } else {
-        setTimeout(() => {
+        // Setelah selesai, ganti ke snippet berikutnya setelah jeda
+        timeoutId = setTimeout(() => {
           setCurrentSnippet((prev) => (prev + 1) % codeSnippets.length)
-          setDisplayedCode("")
-          index = 0
         }, 3000)
       }
     }
 
-    const timeout = setTimeout(typeCode, 1000)
-    return () => clearTimeout(timeout)
-  }, [currentSnippet])
+    typeCode()
 
+    // Fungsi cleanup untuk membatalkan timeout jika komponen unmount
+    return () => clearTimeout(timeoutId)
+  }, [currentSnippet, isInView])
+
+  // Reset teks yang ditampilkan saat snippet berganti
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCursorVisible((prev) => !prev)
-    }, 500)
-    return () => clearInterval(interval)
-  }, [])
+    if (isInView) {
+      setDisplayedCode("")
+    }
+  }, [currentSnippet, isInView])
+
 
   return (
-    <div className="relative">
+    <div ref={ref} className="relative">
       <motion.div
         className="glass-morphism rounded-2xl p-6 font-mono text-sm relative overflow-hidden"
-        initial={{ opacity: 0, rotateX: 45 }}
-        animate={{ opacity: 1, rotateX: 0 }}
-        transition={{ duration: 1 }}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: isInView ? 1 : 0, scale: isInView ? 1 : 0.9 }}
+        transition={{ duration: 0.8 }}
         style={{
           background: "linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1))",
           backdropFilter: "blur(20px)",
           border: "1px solid rgba(0, 188, 212, 0.3)",
         }}
       >
-        {/* Hologram Scanlines */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 2px,
-              rgba(0, 255, 255, 0.1) 2px,
-              rgba(0, 255, 255, 0.1) 4px
-            )`,
-          }}
-          animate={{ y: [-100, 100] }}
-          transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-        />
+        {/* Konten di-render hanya jika komponen terlihat untuk optimasi */}
+        {isInView && (
+          <>
+            {/* Hologram Scanlines - Dihapus karena cukup berat */}
+            {/* <motion.div ... /> */}
 
-        {/* Code Content */}
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-3 h-3 rounded-full bg-red-500" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500" />
-            <div className="w-3 h-3 rounded-full bg-green-500" />
-            <span className="text-primary ml-2 text-xs">{codeSnippets[currentSnippet].language}</span>
-          </div>
+            {/* Code Content */}
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-3 h-3 rounded-full bg-red-500" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                <div className="w-3 h-3 rounded-full bg-green-500" />
+                <span className="text-primary ml-2 text-xs">{codeSnippets[currentSnippet].language}</span>
+              </div>
 
-          <pre className="text-foreground leading-relaxed">
-            <code>
-              {displayedCode.split("\n").map((line, lineIndex) => (
-                <div key={lineIndex} className="flex">
-                  <span className="text-muted-foreground mr-4 select-none">
-                    {String(lineIndex + 1).padStart(2, "0")}
-                  </span>
-                  <span className="syntax-highlight">{line}</span>
-                </div>
-              ))}
-              <span className={`text-primary ${cursorVisible ? "opacity-100" : "opacity-0"}`}>|</span>
-            </code>
-          </pre>
-        </div>
+              <pre className="text-foreground leading-relaxed">
+                <code>
+                  {displayedCode}
+                  <span className="animate-pulse text-primary">|</span>
+                </code>
+              </pre>
+            </div>
 
-        {/* Holographic Glow Effect */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 to-secondary/20 blur-xl -z-10" />
+            {/* Holographic Glow Effect */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 to-secondary/20 blur-xl -z-10" />
+          </>
+        )}
       </motion.div>
     </div>
   )
