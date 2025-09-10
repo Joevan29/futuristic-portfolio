@@ -68,7 +68,7 @@ export function ParallaxStorytelling() {
   const skyColor = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], ["#000428", "#004e92", "#2d1b69", "#000428"])
 
   return (
-    <section id="experience" className="relative min-h-[400vh] overflow-hidden">
+    <section id="experience" className="relative min-h-[220vh] overflow-hidden">
       {/* Dynamic Sky Background */}
       <motion.div
         className="fixed inset-0 z-0"
@@ -193,7 +193,7 @@ export function ParallaxStorytelling() {
           <motion.div
             key={index}
             className="absolute left-1/2 w-2 h-2 bg-primary rounded-full -translate-x-1/2 opacity-30"
-            style={{ top: `${20 + index * 80}vh` }}
+            style={{ top: `${20 + index * 40}vh` }}
             animate={{
               scale: activeIndex === index ? 2 : 1,
               opacity: activeIndex === index ? 1 : 0.3,
