@@ -2,15 +2,11 @@ import dynamic from 'next/dynamic'
 import { CinematicHero } from "@/components/cinematic-hero"
 import { SectionTransition } from "@/components/section-transition"
 
-// --- Impor komponen yang aman (tidak mengakses 'window'/'document' di luar useEffect) ---
-// Navigation akan di-load secara dinamis juga karena menggunakan useEffect untuk scroll
 const Navigation = dynamic(
   () => import('@/components/navigation').then(mod => mod.Navigation),
   { ssr: false }
 )
 
-// --- Gunakan Dynamic Import untuk Komponen Interaktif yang menyebabkan error ---
-// Opsi { ssr: false } mencegah komponen ini dirender di server
 const PerformanceOptimizer = dynamic(
   () => import('@/components/performance-optimizer').then(mod => mod.PerformanceOptimizer),
   { ssr: false }

@@ -3,7 +3,6 @@
 import { motion } from "framer-motion"
 import { ParticleSystem } from "./particle-system"
 import { NeonBlob } from "./neon-blob"
-import { TypingCarousel } from "./typing-carousel"
 import { ChevronDown } from "lucide-react"
 
 export function CinematicHero() {
@@ -59,12 +58,11 @@ export function CinematicHero() {
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              DEVELOPER
+              JoIsDev
             </motion.span>
           </h1>
 
           <div className="text-4xl md:text-6xl lg:text-7xl font-black">
-            <TypingCarousel />
           </div>
         </motion.div>
 

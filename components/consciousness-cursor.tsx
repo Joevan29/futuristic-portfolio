@@ -4,87 +4,64 @@ import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 
 export function ConsciousnessCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [isHovering, setIsHovering] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 }); // Mulai di luar layar
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
 
-    const handleMouseEnter = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (target.matches('button, a, [role="button"], .cursor-pointer')) {
-        setIsHovering(true)
-      }
-    }
+    const handleInteraction = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      setIsHovering(target.closest('button, a, [role="button"], .cursor-pointer') !== null);
+    };
 
-    const handleMouseLeave = () => {
-      setIsHovering(false)
-    }
-
-    window.addEventListener("mousemove", updateMousePosition)
-    document.addEventListener("mouseenter", handleMouseEnter, true)
-    document.addEventListener("mouseleave", handleMouseLeave, true)
-
+    window.addEventListener("mousemove", updateMousePosition);
+    document.addEventListener("mouseover", handleInteraction);
+    
     return () => {
-      window.removeEventListener("mousemove", updateMousePosition)
-      document.removeEventListener("mouseenter", handleMouseEnter, true)
-      document.removeEventListener("mouseleave", handleMouseLeave, true)
-    }
-  }, [])
+      window.removeEventListener("mousemove", updateMousePosition);
+      document.removeEventListener("mouseover", handleInteraction);
+    };
+  }, []);
 
   return (
     <>
-      {/* Main Cursor */}
+      {/* Lingkaran utama (lebih kecil) */}
       <motion.div
-        className="fixed top-0 left-0 w-6 h-6 pointer-events-none z-50 mix-blend-difference"
+        className="fixed top-0 left-0 w-3 h-3 pointer-events-none z-50 rounded-full bg-white mix-blend-difference"
+        style={{
+          x: mousePosition.x,
+          y: mousePosition.y,
+        }}
         animate={{
-          x: mousePosition.x - 12,
-          y: mousePosition.y - 12,
-          scale: isHovering ? 1.5 : 1,
+          scale: isHovering ? 2.5 : 1, // Membesar saat hover
+          opacity: isHovering ? 0.7 : 1,
         }}
         transition={{
           type: "spring",
-          stiffness: 500,
-          damping: 28,
+          stiffness: 800,
+          damping: 40,
         }}
-      >
-        <div className="w-full h-full bg-white rounded-full" />
-      </motion.div>
-
-      {/* Consciousness Trail */}
+      />
+      {/* Lingkaran jejak (lebih besar dan lambat) */}
       <motion.div
-        className="fixed top-0 left-0 w-12 h-12 pointer-events-none z-40"
+        className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-50 rounded-full border-2 border-gray-400 mix-blend-difference"
+        style={{
+          x: mousePosition.x,
+          y: mousePosition.y,
+        }}
         animate={{
-          x: mousePosition.x - 24,
-          y: mousePosition.y - 24,
+          scale: isHovering ? 0 : 1, // Menghilang saat hover
+          opacity: isHovering ? 0 : 0.5,
         }}
         transition={{
           type: "spring",
-          stiffness: 150,
-          damping: 15,
+          stiffness: 200,
+          damping: 20,
         }}
-      >
-        <div className="w-full h-full border-2 border-primary/30 rounded-full" />
-      </motion.div>
-
-      {/* Quantum Particles */}
-      {[...Array(3)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="fixed top-0 left-0 w-2 h-2 bg-secondary/50 rounded-full pointer-events-none z-30"
-          animate={{
-            x: mousePosition.x - 4,
-            y: mousePosition.y - 4,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 100 - i * 20,
-            damping: 10 + i * 5,
-          }}
-        />
-      ))}
+      />
     </>
   )
 }
