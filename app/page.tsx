@@ -1,14 +1,49 @@
-import { Navigation } from "@/components/navigation"
+import dynamic from 'next/dynamic'
 import { CinematicHero } from "@/components/cinematic-hero"
-import { WhatIDoSection } from "@/components/what-i-do-section"
-import { ParallaxStorytelling } from "@/components/parallax-storytelling"
-import { PortfolioShowcase } from "@/components/portfolio-showcase"
-import { BiometricServices } from "@/components/biometric-services"
-import { FuturisticContact } from "@/components/futuristic-contact"
 import { SectionTransition } from "@/components/section-transition"
-import { ScrollProgress } from "@/components/scroll-progress"
-import { PerformanceOptimizer } from "@/components/performance-optimizer"
-import { ConsciousnessCursor } from "@/components/consciousness-cursor"
+
+// --- Impor komponen yang aman (tidak mengakses 'window'/'document' di luar useEffect) ---
+// Navigation akan di-load secara dinamis juga karena menggunakan useEffect untuk scroll
+const Navigation = dynamic(
+  () => import('@/components/navigation').then(mod => mod.Navigation),
+  { ssr: false }
+)
+
+// --- Gunakan Dynamic Import untuk Komponen Interaktif yang menyebabkan error ---
+// Opsi { ssr: false } mencegah komponen ini dirender di server
+const PerformanceOptimizer = dynamic(
+  () => import('@/components/performance-optimizer').then(mod => mod.PerformanceOptimizer),
+  { ssr: false }
+)
+const ScrollProgress = dynamic(
+  () => import('@/components/scroll-progress').then(mod => mod.ScrollProgress),
+  { ssr: false }
+)
+const ConsciousnessCursor = dynamic(
+  () => import('@/components/consciousness-cursor').then(mod => mod.ConsciousnessCursor),
+  { ssr: false }
+)
+const WhatIDoSection = dynamic(
+  () => import('@/components/what-i-do-section').then(mod => mod.WhatIDoSection),
+  { ssr: false }
+)
+const ParallaxStorytelling = dynamic(
+  () => import('@/components/parallax-storytelling').then(mod => mod.ParallaxStorytelling),
+  { ssr: false }
+)
+const PortfolioShowcase = dynamic(
+  () => import('@/components/portfolio-showcase').then(mod => mod.PortfolioShowcase),
+  { ssr: false }
+)
+const BiometricServices = dynamic(
+  () => import('@/components/biometric-services').then(mod => mod.BiometricServices),
+  { ssr: false }
+)
+const FuturisticContact = dynamic(
+  () => import('@/components/futuristic-contact').then(mod => mod.FuturisticContact),
+  { ssr: false }
+)
+
 
 export default function Home() {
   return (
