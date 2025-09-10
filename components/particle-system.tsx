@@ -39,7 +39,7 @@ export function ParticleSystem() {
     const colors = ["#00ffff", "#ff00ff", "#39ff14", "#ffd700", "#9d4edd"]
     const initialParticles: Particle[] = []
 
-    for (let i = 0; i < 250; i++) {
+    for (let i = 0; i < 75; i++) {
       initialParticles.push({
         id: i,
         x: Math.random() * canvas.width,

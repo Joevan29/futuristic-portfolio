@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   title: "Joevan Pramana Achmad | Full-Stack Developer Portfolio",
   description:
     "Professional portfolio of Joevan Pramana Achmad - Full-Stack Developer specializing in modern web technologies, AI integration, and elegant user experiences.",
-  generator: "v0.app",
+  generator: "Next.js",
 }
 
 export default function RootLayout({
